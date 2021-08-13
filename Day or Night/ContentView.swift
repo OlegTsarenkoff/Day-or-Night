@@ -8,9 +8,65 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @AppStorage("lightsOn") private var lightsOn: Bool = false
+
+    private var backgroundColor: Color {
+        lightsOn ? .white : .black
+    }
+    
+    private var foregroundColor: Color {
+        lightsOn ? .black : .white
+    }
+    
+    private var imageName: String {
+        lightsOn ? "sun.max.fill" : "moon.fill"
+    }
+    
+    private var imageColor: Color {
+        lightsOn ? .yellow : .blue
+    }
+    
+    private var text: String {
+        lightsOn ? "Выключи свет!" : "Включи свет :)"
+    }
+    
+    @State private var rotation: Double = 0
+    
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        ZStack {
+            backgroundColor.edgesIgnoringSafeArea(.all)
+            
+            VStack(alignment: .center) {
+                Spacer()
+                
+                Image(systemName: imageName)
+                    .font(.system(size: 88))
+                    .foregroundColor(imageColor)
+                    .padding()
+                    .rotationEffect(.degrees(rotation))
+                    .animation(.easeInOut(duration: 1))
+                
+                Spacer()
+                
+                Text(text)
+                    .font(.largeTitle)
+                    .bold()
+                    .animation(.none)
+                Toggle(isOn: $lightsOn.animation()) {
+                }
+                    .labelsHidden()
+            }
+            .foregroundColor(foregroundColor)
+            .onChange(of: lightsOn, perform: { value in
+                if value {
+                    rotation += 360
+                } else {
+                    rotation -= 360
+                }
+            })
+        }
     }
 }
 
